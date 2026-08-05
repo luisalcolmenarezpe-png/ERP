@@ -1,4 +1,4 @@
-name: Build APK
+name: Build ERP Apps
 
 on:
   push:
@@ -6,22 +6,65 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-android:
+    name: Compilar APK Android
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
 
-      - run: flutter pub get
+      - name: Crear estructura del proyecto
+        run: flutter create . --platforms=android --org com.erp.pos
 
-      - run: flutter create . --platforms=android
+      - name: Instalar dependencias
+        run: flutter pub get
 
-      - run: flutter build apk --release
+      - name: Construir APK Release
+        run: flutter build apk --release
 
-      - uses: actions/upload-artifact@v4
+      - name: Subir APK como artefacto
+        uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/*.
+          name: erp-android-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+  build-windows:
+    name: Compilar Ejecutable Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Crear estructura del proyecto
+        run: flutter create . --platforms=windows --org com.erp.pos
+
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Construir Windows Release
+        run: flutter build windows --release
+
+      - name: Subir Ejecutable como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: erp-windows-executable
+          path: build/windows/x64/runner/Release/
+          

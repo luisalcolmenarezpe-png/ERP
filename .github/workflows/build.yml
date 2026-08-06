@@ -25,9 +25,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Crear estructura del proyecto
-        run: flutter create . --platforms=android --org com.erp.pos
-
       - name: Instalar dependencias
         run: flutter pub get
 
@@ -52,9 +49,6 @@ jobs:
         with:
           channel: 'stable'
           cache: true
-
-      - name: Crear estructura del proyecto
-        run: flutter create . --platforms=windows --org com.erp.pos
 
       - name: Instalar dependencias
         run: flutter pub get
